@@ -1,27 +1,27 @@
 $(function () {
-  var $codeBlock = $('.CodeMirror-lines > div > div:eq(2)'),
-      count = 0,
+  "use strict";
+
+  var DEFAULT_LINES_COUNT = 40,
+      $codeBlock = $('.CodeMirror-lines > div > div:eq(2)'),
       $numbersBlock,
-      numberize,
-      initialize,
       count = 0,
-      timeouts = [],
-      DEFAULT_LINES_COUNT = 40;
+      timeout,
+      numberize,
+      initialize;
 
   initialize  = function () {
-    $('.CodeMirror-lines:first').before("<div class='numbers' style='float:left; margin-top: 4px; min-height: 100%'></div>");
-    $('.CodeMirror-lines:first').css('margin-left', '21px')
-    $numbersBlock = $('.CodeMirror-lines').prev();
+    var $codeMirror = $('.CodeMirror-lines:first');
+    $codeMirror.before("<div class='numbers' style='float:left; margin-top: 4px; min-height: 100%'></div>");
+    $codeMirror.css('margin-left', '21px');
+    $numbersBlock = $codeMirror.prev();
   }
 
   numberize = function (number_count) {
     var preNumbers = "",
-        i = 0,
         number_count = number_count || $codeBlock.find('pre').length;
-    if ( number_count > count ) {
-      i = count;
-      for (; i <= $codeBlock.find('pre').length; i++, count++ ) {
-        preNumbers += '<pre>' + i + '.</pre>';
+    if ( number_count > count) {
+      for (; count < number_count; count += 1) {
+        preNumbers += '<pre>' + (count + 1) + '.</pre>';
       }
       $numbersBlock.append(preNumbers);
     }
@@ -30,16 +30,13 @@ $(function () {
   initialize();
 
   if ($codeBlock.length) {
-    numberize(DEFAULT_LINES_COUNT);
+    numberize();
   }
 
   $codeBlock[0].addEventListener('DOMNodeInserted', function (e) {
     if (e.target.tagName === "PRE"){
-      for (i in timeouts) {
-        clearTimeout(timeouts[i])
-      }
-      timeouts = [];
-      timeouts.push(setTimeout(numberize));
+      clearTimeout(timeout);
+      timeout = setTimeout(numberize, 300);
     }
   });
 });
